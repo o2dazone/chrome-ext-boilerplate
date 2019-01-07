@@ -2,32 +2,30 @@ var gulp = require('gulp');
 var connect = require('gulp-connect');
 var minify = require('gulp-minify');
 var webpack = require('webpack-stream');
-var gulpConfig = require('./gulp.config');
-
 var exec = require('child_process').exec;
 
-// Tasks
-gulp.task('default', ['scripts']);
-
-gulp.task('scripts', function() {
-  return gulp.src(gulpConfig.scripts.paths.entry)
-    .pipe(webpack(gulpConfig.webpack))
+gulp.task('scripts', () =>
+  gulp.src('./scripts/index.js')
+    .pipe(webpack({
+      cache: true,
+      output: {
+        filename: 'index.js'
+      }
+    }))
     .pipe(minify({ noSource: true, ext: { min: '.js' } }))
     .pipe(connect.reload())
-    .pipe(gulp.dest(gulpConfig.scripts.paths.output.prod));
-});
+    .pipe(gulp.dest('./chrome-extension'))
+);
 
-gulp.task('refresh_extension', function() {
+gulp.task('refresh_extension', () => {
   exec('open http://reload.extensions', null);
 });
 
-gulp.task('watch', ['default'], function() {
-  gulp.watch(gulpConfig.scripts.paths.all, ['scripts', 'refresh_extension']);
+gulp.task('watch', gulp.series('scripts', () => {
+  gulp.watch('./scripts/*.js', gulp.parallel('scripts', 'refresh_extension'));
   connect.server({
-    port: gulpConfig.connect.port,
-    root: gulpConfig.ports.expressRoot,
+    port: 8080,
+    root: 'chrome-extension',
     livereload: true
   });
-});
-
-
+}));

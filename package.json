@@ -6,7 +6,7 @@
     "build": "cd chrome-extension && zip -j chrome-ext-boilerplate.zip index.js manifest.json"
   },
   "devDependencies": {
-    "gulp": "^3.9.1",
+    "gulp": "^4.0.0",
     "gulp-connect": "^5.7.0",
     "gulp-minify": "^3.1.0",
     "webpack-stream": "^4.0.0",
